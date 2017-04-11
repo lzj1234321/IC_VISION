@@ -48,14 +48,6 @@ bool DoubleLinked_List::nodeAdd(struct STRU_doubleLinked_List* node)
 	if (current_NodeNum < MAX_NodeNum)
 	{
 		currentPointToNode->Next = node;
-		tailNode = node;
-		//while (tailNode == currentPointToNode&&tailNode->Prev!=NULL)
-		//{
-		//	STRU_doubleLinked_List* nodeX = tailNode->Prev;
-		//	STRU_doubleLinked_List* nodeY = tailNode;
-		//	delete nodeY;
-		//	tailNode = nodeX;
-		//}
 		tailNode->Next = node;
 		node->Prev = tailNode;
 		current_NodeNum++;

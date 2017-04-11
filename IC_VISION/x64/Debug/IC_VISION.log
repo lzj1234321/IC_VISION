@@ -1,7 +1,2 @@
-﻿  Img_Draw.cpp
-c:\users\lzj\documents\visual studio 2015\projects\ic_vision\ic_vision\img_draw.cpp(396): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-c:\users\lzj\documents\visual studio 2015\projects\ic_vision\ic_vision\img_draw.cpp(403): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-  DoubleLinked_List.cpp
-  正在生成代码...
-  IC_VISION.vcxproj -> C:\Users\lzj\Documents\Visual Studio 2015\Projects\IC_VISION\x64\Debug\IC_VISION.exe
+﻿  IC_VISION.vcxproj -> C:\Users\lzj\Documents\Visual Studio 2015\Projects\IC_VISION\x64\Debug\IC_VISION.exe
   IC_VISION.vcxproj -> C:\Users\lzj\Documents\Visual Studio 2015\Projects\IC_VISION\x64\Debug\IC_VISION.pdb (Partial PDB)

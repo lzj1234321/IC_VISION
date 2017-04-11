@@ -34,6 +34,7 @@ CvPoint moveDistance[2];
 
 Img_Draw imgDraw;
 int drawElementFlag;//0:rectangle 1:circle 2:straight line
+bool moveImgElementFlag = false;
 
 
 /*已经加入的功能*/
@@ -84,15 +85,13 @@ void ImageMouseClickEvent(int event, int x, int y, int flags, void* param)
 {
 	Mat *srcMat = new Mat;
 	*srcMat = ((Mat*)param)->clone();
+	int moveX=0, moveY=0;
 	switch (event)
 	{
 	case CV_EVENT_MOUSEMOVE:
 	{
 		position_2_DataGet(x, y);
 
-		/*移动距离获取*/
-		moveDistance[1].x = x;
-		moveDistance[1].y = y;
 
 		//coordinateShowFunction(mousePosition, *srcMat);
 		imgX->SetWindowText(INT_ToCString(x));
@@ -100,13 +99,20 @@ void ImageMouseClickEvent(int event, int x, int y, int flags, void* param)
 		//if (BEENCHOOSED_ELEMENTNUM != -1&&flags== CV_EVENT_FLAG_LBUTTON)
 		if (flags == CV_EVENT_FLAG_LBUTTON)
 		{
-			int moveX,moveY;
-			moveX= moveDistance[0].x - moveDistance[1].x;
-			moveY= moveDistance[0].y - moveDistance[1].y;
-			*srcMat = imgDraw.reDraw(BEENCHOOSED_ELEMENTNUM,moveX,moveY).clone();
-			Global_PIC_Size_ShowMat = srcMat->clone();
-			moveDistance[0] = moveDistance[1];
-			imshow("view", *srcMat);
+			if (BEENCHOOSED_ELEMENTNUM != -1)//有选中对象时才会执行重绘操作
+			{
+				/*移动距离获取*/
+				moveDistance[1].x = x;
+				moveDistance[1].y = y;
+				moveImgElementFlag = true;
+
+				moveX = moveDistance[0].x - moveDistance[1].x;
+				moveY = moveDistance[0].y - moveDistance[1].y;
+				*srcMat = imgDraw.reDraw(BEENCHOOSED_ELEMENTNUM, moveX, moveY).clone();
+				Global_PIC_Size_ShowMat = srcMat->clone();
+				//moveDistance[0] = moveDistance[1];
+				imshow("view", *srcMat);
+			}
 		}
 		if (flags == 17)//shift+leftbuttonon draw rectangle
 		{
@@ -145,9 +151,11 @@ void ImageMouseClickEvent(int event, int x, int y, int flags, void* param)
 
 		BEENCHOOSED_ELEMENTNUM = -1;
 		position_1_DataGet(x, y);
-		if (imgDraw.IsElementChoosed(CvPoint(x, y)))
+		if (imgDraw.IsElementChoosed(CvPoint(x, y)))//有选中对象时才会执行重绘操作
+		{
 			BEENCHOOSED_ELEMENTNUM = imgDraw.beenChoosedElementNum;
-		*srcMat = imgDraw.reDraw().clone();
+			*srcMat = imgDraw.reDraw().clone();
+		}
 		imshow("view", *srcMat);
 	}
 	break;
@@ -182,6 +190,13 @@ void ImageMouseClickEvent(int event, int x, int y, int flags, void* param)
 			break;
 		}
 		drawElementFlag = 100;
+		if (moveImgElementFlag)
+		{
+			imgDraw.operationSave(BEENCHOOSED_ELEMENTNUM, moveDistance[0].x - moveDistance[1].x, moveDistance[0].y - moveDistance[1].y);
+			//imgDraw.operationPushBack();
+			//imgDraw.imgElementMove(BEENCHOOSED_ELEMENTNUM, moveDistance[0].x-moveDistance[1].x, moveDistance[0].y - moveDistance[1].y);
+			moveImgElementFlag = false;
+		}
 	}
 	break;
 

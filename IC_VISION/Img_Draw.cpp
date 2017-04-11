@@ -7,14 +7,13 @@ Img_Draw::Img_Draw()
 	beenChoosedElementNum = -1;
 	beenClickedColour = COLOUR_RED;
 	generalColour = COLOUR_GREEN;
-	headNode->Vec_operationList =Vec_imgElement;
+	headNode->Vec_operationList = Vec_imgElement;
 }
 Img_Draw::~Img_Draw()
 {
 }
 bool Img_Draw::IsElementChoosed(CvPoint mouseClickPosition)
 {
-
 	beenChoosedElementNum = -1;
 	int i;
 	if (currentPointToNode != NULL)
@@ -81,10 +80,6 @@ void Img_Draw::moveLine(INT redrawElementNum, INT moveX, INT moveY)
 }
 void Img_Draw::moveRectangle(INT redrawElementNum, INT moveX, INT moveY)
 {
-	//Vec_imgElement[redrawElementNum].startingPoint.x -= moveX;
-	//Vec_imgElement[redrawElementNum].endingPoint.x -= moveX;
-	//Vec_imgElement[redrawElementNum].startingPoint.y -= moveY;
-	//Vec_imgElement[redrawElementNum].endingPoint.y -= moveY;
 	currentPointToNode->Vec_operationList[redrawElementNum].startingPoint.x -= moveX;
 	currentPointToNode->Vec_operationList[redrawElementNum].startingPoint.y -= moveY;
 	currentPointToNode->Vec_operationList[redrawElementNum].endingPoint.x -= moveX;
@@ -93,128 +88,157 @@ void Img_Draw::moveRectangle(INT redrawElementNum, INT moveX, INT moveY)
 void Img_Draw::moveEllipse(INT redrawElementNum, INT moveX, INT moveY)
 {
 }
+void Img_Draw::imgElementMove(INT beenChoosedElementNum,int moveX,int moveY)
+{
+	switch (currentPointToNode->Vec_operationList[beenChoosedElementNum].elementType)
+	{
+	case 0:
+	{
+		moveRectangle(beenChoosedElementNum,moveX,moveY);
+	}
+	break;
+	case 1:
+	{
+		moveCircle(beenChoosedElementNum, moveX, moveY);
+	}
+	break;
+	case 2:
+	{
+		moveLine(beenChoosedElementNum, moveX, moveY);
+
+	}
+	break;
+	case 3:
+	{
+		moveEllipse(beenChoosedElementNum, moveX, moveY);
+	}
+	break;
+	default:
+		break;
+	}
+}
 
 Mat Img_Draw::reDraw()
 {
 	int i;
 	Scalar drawElementColour = generalColour;
 	Mat reDrawMat = originalMat.clone();
-	if(currentPointToNode!=NULL)
-	{ 
-	vector<struct imgElement>::iterator imgElementIterator = currentPointToNode->Vec_operationList.begin();
-	for (i = 0; imgElementIterator != currentPointToNode->Vec_operationList.end(); imgElementIterator++, i++)
+	if (currentPointToNode != NULL&&currentPointToNode->Vec_operationList.size() > 0)
 	{
-		if (i == beenChoosedElementNum)
+		vector<struct imgElement>::iterator imgElementIterator = currentPointToNode->Vec_operationList.begin();
+		for (i = 0; imgElementIterator != currentPointToNode->Vec_operationList.end(); imgElementIterator++, i++)
 		{
-			drawElementColour = beenClickedColour;
-		}
-		else
-			drawElementColour = generalColour;
-		switch (imgElementIterator->elementType)
-		{
-		case 0:
-		{
-			drawRectangle(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
-		}
-		break;
-		case 1:
-		{
-			drawCircle(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->elementRadius, drawElementColour);
-		}
-		break;
-		case 2:
-		{
-			drawLine(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
-		}
-		break;
-		case 3:
-		{
-			drawEllipse(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->size, 10, 0, 360, drawElementColour);
-		}
-		break;
-		default:
+			if (i == beenChoosedElementNum)
+			{
+				drawElementColour = beenClickedColour;
+			}
+			else
+				drawElementColour = generalColour;
+			switch (imgElementIterator->elementType)
+			{
+			case 0:
+			{
+				drawRectangle(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
+			}
 			break;
+			case 1:
+			{
+				drawCircle(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->elementRadius, drawElementColour);
+			}
+			break;
+			case 2:
+			{
+				drawLine(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
+			}
+			break;
+			case 3:
+			{
+				drawEllipse(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->size, 10, 0, 360, drawElementColour);
+			}
+			break;
+			default:
+				break;
+			}
 		}
-	}
 	}
 	//beenChoosedElementNum = -1;
 	return reDrawMat;
 }
 Mat Img_Draw::reDraw(INT redrawElementNum, INT moveX, INT moveY)
 {
-	Scalar drawElementColour = generalColour;
-	Mat reDrawMat = originalMat.clone();
-	vector<struct imgElement>::iterator imgElementIterator=currentPointToNode->Vec_operationList.begin();
-	for (int i = 0; imgElementIterator != currentPointToNode->Vec_operationList.end(); imgElementIterator++, i++)
+	if (redrawElementNum < currentPointToNode->Vec_operationList.size()&&redrawElementNum!=-1)
 	{
-
-		//line = 0,
-		//	circle = 1,
-		//	rectangle = 2,
-		//	ellipse = 3,
-		if (i == redrawElementNum)
+		Scalar drawElementColour = generalColour;
+		Mat reDrawMat = originalMat.clone();
+		vector<struct imgElement>::iterator imgElementIterator = currentPointToNode->Vec_operationList.begin();
+		for (int i = 0; imgElementIterator != currentPointToNode->Vec_operationList.end(); imgElementIterator++, i++)
 		{
-			drawElementColour = beenClickedColour;
+			if (i == redrawElementNum)
+			{
+				drawElementColour = beenClickedColour;
+				switch (imgElementIterator->elementType)
+				{
+				case 0:
+				{
+					drawRectangle(reDrawMat, CvPoint(imgElementIterator->startingPoint.x - moveX, imgElementIterator->startingPoint.y - moveY), CvPoint(imgElementIterator->endingPoint.x - moveX, imgElementIterator->endingPoint.y - moveY), drawElementColour);
+				}
+				break;
+				case 1:
+				{
+					drawCircle(reDrawMat, CvPoint(imgElementIterator->elementCenter.x - moveX, imgElementIterator->elementCenter.y - moveY), imgElementIterator->elementRadius, drawElementColour);
+				}
+				break;
+				case 2:
+				{
+					drawLine(reDrawMat, CvPoint(imgElementIterator->startingPoint.x - moveX, imgElementIterator->startingPoint.y - moveY), CvPoint(imgElementIterator->endingPoint.x - moveX, imgElementIterator->endingPoint.y - moveY), drawElementColour);
+				}
+				break;
+				case 3:
+				{
+
+				}
+				break;
+				default:
+					break;
+				}
+				continue;
+			}
+			else
+				drawElementColour = generalColour;
 			switch (imgElementIterator->elementType)
 			{
 			case 0:
 			{
-				moveRectangle(redrawElementNum, moveX, moveY);
 				drawRectangle(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
 			}
 			break;
 			case 1:
 			{
-				moveCircle(redrawElementNum, moveX, moveY);
 				drawCircle(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->elementRadius, drawElementColour);
 			}
 			break;
 			case 2:
 			{
-				moveLine(redrawElementNum, moveX, moveY);
 				drawLine(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
 			}
 			break;
 			case 3:
 			{
-
+				drawEllipse(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->size, 10, 0, 360, drawElementColour);
 			}
 			break;
 			default:
 				break;
 			}
-			continue;
 		}
-		else
-			drawElementColour = generalColour;
-		switch (imgElementIterator->elementType)
-		{
-		case 0:
-		{
-			drawRectangle(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
-		}
-		break;
-		case 1:
-		{
-			drawCircle(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->elementRadius, drawElementColour);
-		}
-		break;
-		case 2:
-		{
-			drawLine(reDrawMat, imgElementIterator->startingPoint, imgElementIterator->endingPoint, drawElementColour);
-		}
-		break;
-		case 3:
-		{
-			drawEllipse(reDrawMat, imgElementIterator->elementCenter, imgElementIterator->size, 10, 0, 360, drawElementColour);
-		}
-		break;
-		default:
-			break;
-		}
+		beenChoosedElementNum = -1;
+		return reDrawMat;
 	}
-	beenChoosedElementNum = -1;
-	return reDrawMat;
+	else
+	{
+		//AfxMessageBox(TEXT("vector error!" + INT_ToCString(beenChoosedElementNum)));
+		return Global_PIC_Size_ShowMat;
+	}
 }
 Mat Img_Draw::reDraw(Mat& srcMat)
 {
@@ -257,12 +281,13 @@ Mat Img_Draw::reDraw(Mat& srcMat)
 	//beenChoosedElementNum = -1;
 	return reDrawMat;
 }
-Mat Img_Draw::reDraw(vector<struct imgElement>::iterator imgElementIterator)
+Mat Img_Draw::reDraw(vector<struct imgElement> VecImgElementList)
 {
 	int i;
 	Scalar drawElementColour = generalColour;
 	Mat reDrawMat = originalMat.clone();
-	for (i = 0; imgElementIterator != currentPointToNode->Vec_operationList.end(); imgElementIterator++, i++)
+	vector<struct imgElement>::iterator imgElementIterator = VecImgElementList.begin();
+	for (i = 0; imgElementIterator != VecImgElementList.end(); imgElementIterator++, i++)
 	{
 		if (i == beenChoosedElementNum)
 		{
@@ -431,11 +456,7 @@ Mat Img_Draw::recovery()
 	Mat test;
 	return test;
 }
-Mat Img_Draw::move()
-{
-	Mat test;
-	return test;
-}
+
 Mat Img_Draw::elementRemove()
 {
 	Mat test;
@@ -449,11 +470,7 @@ INT Img_Draw::lineElement_PushBack(CvPoint StartingPoint, CvPoint EndingPoint)
 	line.startingPoint = StartingPoint;
 	line.endingPoint = EndingPoint;
 	line.elementType = 2;
-	imgDraw.Vec_imgElement.push_back(line);
-
-	currentPointToNode->Vec_operationList.push_back(line);
-
-	operationPushBack();
+	operationSave(line);
 	return 1;
 }
 INT Img_Draw::rectangleElement_PushBack(CvPoint StartingPoint, CvPoint EndingPoint)
@@ -463,11 +480,7 @@ INT Img_Draw::rectangleElement_PushBack(CvPoint StartingPoint, CvPoint EndingPoi
 	rectangle.startingPoint = StartingPoint;
 	rectangle.endingPoint = EndingPoint;
 	rectangle.elementType = 0;
-	imgDraw.Vec_imgElement.push_back(rectangle);	
-
-	currentPointToNode->Vec_operationList.push_back(rectangle);
-
-	operationPushBack();
+	operationSave(rectangle);
 	return 1;
 }
 INT Img_Draw::circleElement_PushBack(CvPoint center, INT radius)
@@ -477,12 +490,7 @@ INT Img_Draw::circleElement_PushBack(CvPoint center, INT radius)
 	circle.elementCenter = center;
 	circle.elementRadius = radius;
 	circle.elementType = 1;
-	imgDraw.Vec_imgElement.push_back(circle);
-
-	currentPointToNode->Vec_operationList.push_back(circle);
-
-
-	operationPushBack();
+	operationSave(circle);
 	return 1;
 }
 INT Img_Draw::ellipseElement_PushBack(CvPoint center, CvSize size)
@@ -491,8 +499,7 @@ INT Img_Draw::ellipseElement_PushBack(CvPoint center, CvSize size)
 	ellipse.elementCenter = center;
 	ellipse.elementType = 3;
 	ellipse.size = size;
-	imgDraw.Vec_imgElement.push_back(ellipse);
-	operationPushBack();
+	operationSave(ellipse);
 	return 1;
 }
 
@@ -505,26 +512,38 @@ BOOL Img_Draw::operationPushBack()
 	return  true;
 }
 
+BOOL Img_Draw::operationSave(imgElement img_element)
+{
+	operationPushBack();
+	currentPointToNode->Vec_operationList.push_back(img_element);
+	return true;
+}
+
+BOOL Img_Draw::operationSave(INT beenChoosedElementNum, INT moveX, INT moveY)
+{
+	operationPushBack();
+	imgElementMove(beenChoosedElementNum, moveX, moveY);
+	return true;
+}
+
 Mat Img_Draw::UNDO()
 {
-	if (currentPointToNode != NULL&&currentPointToNode->Prev!=NULL)
+	if (currentPointToNode != NULL&&currentPointToNode->Prev != NULL)
 	{
 		currentPointToNode = currentPointToNode->Prev;
-		vector<struct imgElement>::iterator imgElementIterator = currentPointToNode->Vec_operationList.begin();
 		current_NodeNum--;
-		return 	reDraw(imgElementIterator);
+		return 	reDraw();
 	}
 	else
 		return originalMat;
 }
 Mat Img_Draw::REDO()
 {
-	if (currentPointToNode != NULL&&currentPointToNode->Next!=NULL)
+	if (currentPointToNode != NULL&&currentPointToNode->Next != NULL)
 	{
 		currentPointToNode = currentPointToNode->Next;
-		vector<struct imgElement>::iterator imgElementIterator = currentPointToNode->Vec_operationList.begin();
 		current_NodeNum++;
-		return 	reDraw(imgElementIterator);
+		return 	reDraw();
 	}
 	else
 		return originalMat;

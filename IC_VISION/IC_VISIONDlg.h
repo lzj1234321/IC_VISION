@@ -71,4 +71,9 @@ public:
 	afx_msg void OnTRBNThumbPosChangingSlider1(NMHDR *pNMHDR, LRESULT *pResult);
 //	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnBnClickedButton17();
+	afx_msg void OnBnClickedButton18();
+	afx_msg void OnBnClickedButton19();
+	afx_msg void OnBnClickedButton20();
+	afx_msg void OnBnClickedButton21();
 };

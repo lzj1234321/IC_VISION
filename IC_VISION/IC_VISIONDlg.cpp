@@ -91,7 +91,12 @@ BEGIN_MESSAGE_MAP(VISIONDlg, CDialogEx)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER1, &VISIONDlg::OnNMCustomdrawSlider1)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER1, &VISIONDlg::OnNMReleasedcaptureSlider1)
 	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER1, &VISIONDlg::OnTRBNThumbPosChangingSlider1)
-//	ON_WM_KEYDOWN()
+	//	ON_WM_KEYDOWN()
+	ON_BN_CLICKED(IDC_BUTTON17, &VISIONDlg::OnBnClickedButton17)
+	ON_BN_CLICKED(IDC_BUTTON18, &VISIONDlg::OnBnClickedButton18)
+	ON_BN_CLICKED(IDC_BUTTON19, &VISIONDlg::OnBnClickedButton19)
+	ON_BN_CLICKED(IDC_BUTTON20, &VISIONDlg::OnBnClickedButton20)
+	ON_BN_CLICKED(IDC_BUTTON21, &VISIONDlg::OnBnClickedButton21)
 END_MESSAGE_MAP()
 
 
@@ -249,7 +254,7 @@ BOOL VISIONDlg::OnInitDialog()
 	theApp.imgProcess = new Img_Process;
 
 	//设置slider属性
-	imgProcessSlider.SetRange(0, 20); 
+	imgProcessSlider.SetRange(0, 20);
 	imgProcessSlider.SetTicFreq(300);   // 每10个单位画一刻度.  
 	//imgProcessSlider.SetPos(1000);      // 设置默认单消间隔时间为1秒.
 
@@ -645,9 +650,9 @@ void VISIONDlg::OnBnClickedButton11()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//Threshold_settingsDlg->DoModal();
-	Mat test=imgDraw.REDO().clone();
+	Mat test = imgDraw.REDO().clone();
 	Global_PIC_Size_ShowMat = test.clone();
-	imshow("view", test);
+	imshow("view", Global_PIC_Size_ShowMat);
 	//Threshold_settingsDlg->Create(IDD_DIALOG4, this);
 }
 
@@ -659,7 +664,7 @@ void VISIONDlg::OnBnClickedButton12()
 	//Canny_settingsDlg->DoModal();
 	Mat test = imgDraw.UNDO().clone();
 	Global_PIC_Size_ShowMat = test.clone();
-	imshow("view", test);
+	imshow("view", Global_PIC_Size_ShowMat);
 }
 
 
@@ -814,7 +819,7 @@ void VISIONDlg::OnNMReleasedcaptureSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 	Mat test11 = imread("C:/Users/ONLY/Desktop/1.bmp");
 	Mat test2 = Mat(theApp.PIC_SIZE, test.type());
 	resize(test, test2, theApp.PIC_SIZE);
-	Mat test3= Mat(theApp.PIC_SIZE, test.type());
+	Mat test3 = Mat(theApp.PIC_SIZE, test.type());
 	resize(test11, test3, theApp.PIC_SIZE);
 	int sliderPosition = imgProcessSlider.GetPos() % 2;
 	switch (sliderPosition)
@@ -862,8 +867,8 @@ void VISIONDlg::OnTRBNThumbPosChangingSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 BOOL VISIONDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	
-	if (pMsg->wParam == VK_DELETE&&pMsg->message==WM_KEYUP)
+
+	if (pMsg->wParam == VK_DELETE&&pMsg->message == WM_KEYUP)
 	{
 		if (imgDraw.currentPointToNode->Vec_operationList.size() > 0)
 		{
@@ -874,4 +879,44 @@ BOOL VISIONDlg::PreTranslateMessage(MSG* pMsg)
 		return true;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void VISIONDlg::OnBnClickedButton17()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	Mat test = imgDraw.reDraw(imgDraw.headNode->Vec_operationList);
+	imshow("view", test);
+}
+
+
+void VISIONDlg::OnBnClickedButton18()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	Mat test = imgDraw.reDraw(imgDraw.headNode->Next->Vec_operationList);
+	imshow("view", test);
+}
+
+
+void VISIONDlg::OnBnClickedButton19()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	Mat test = imgDraw.reDraw(imgDraw.currentPointToNode->Prev->Vec_operationList);
+	imshow("view", test);
+}
+
+
+void VISIONDlg::OnBnClickedButton20()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	Mat test = imgDraw.reDraw(imgDraw.currentPointToNode->Next->Vec_operationList);
+	imshow("view", test);
+}
+
+
+void VISIONDlg::OnBnClickedButton21()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	Mat test = imgDraw.reDraw(imgDraw.currentPointToNode->Vec_operationList);
+	imshow("view", test);
 }

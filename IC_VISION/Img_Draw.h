@@ -27,12 +27,12 @@ public:
 	bool isAnyElementBeenChoosed;
 	INT beenChoosedElementNum;
 	bool IsElementChoosed(CvPoint mouseClickPosition);
-	Mat move();
+	void imgElementMove(INT, int, int);
 	Mat elementRemove();
 	Mat reDraw(Mat&);
 	Mat reDraw();
 	Mat reDraw(INT redrawElementNum,INT,INT);
-	Mat reDraw(vector<struct imgElement>::iterator);
+	Mat reDraw(vector<struct imgElement> VecImgElementList);
 	Mat reSize();
 	Mat recovery();
 	INT matShow(const Mat&);
@@ -64,6 +64,8 @@ public:
 	void moveEllipse(INT redrawElementNum, INT moveX, INT moveY);
 
 	BOOL operationPushBack();
+	BOOL operationSave(imgElement);
+	BOOL operationSave(INT, INT, INT);
 	Mat UNDO();
 	Mat REDO();
 };
